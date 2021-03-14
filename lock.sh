@@ -1,4 +1,5 @@
 #!/bin/bash
+
 dir=/home/user/lock.sh
 port=35432
 
