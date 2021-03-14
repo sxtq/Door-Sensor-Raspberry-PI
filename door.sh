@@ -9,7 +9,6 @@ first_run=1
 log_file=/root/door.log
 ip=
 port=
-dir=/root
 
 key="your otp key here"
 
