@@ -11,31 +11,6 @@ ip=
 port=
 dir=/root
 
-timer () {
-  timerloop=1
-  h=0
-  m=0
-  s=0
-  d=0
-  while [ "$timerloop" = '1' ] ; do
-    ((s=s+1))
-    sleep 1
-    if [ "$s" = '60' ] ; then
-      ((m=m+1))
-      s=0
-    fi
-    if [ "$m" = '60' ] ; then
-      ((h=h+1))
-      m=0
-    fi
-    if [ "$h" = '24' ] ; then
-      ((d=d+1))
-      h=0
-    fi
-    echo "$d/$h/$m/$s" > "$dir"/doortimer.log
-  done &
-}
-
 send () {
   if [ "$new_output" = "$old_output" ]; then
     echo "Already sent nothing to do"
@@ -63,19 +38,18 @@ while true; do
   if [ "1" = "$(</sys/class/gpio/gpio"${GPIO}"/value)" ]; then
     if [ "$lock" = "1" ] && [ "$norun" = "0" ]; then
       echo "Lock" | netcat "$ip" "$port"
-      timer
       norun=1
+      SECONDS=0
     fi
     echo "Door is closed"
     send "Security System" "Door is open date: "
     new_output="1"
   else
     if [ "$norun" = "1" ]; then
-      timeopen=$(cat "$dir/doortimer.log")
-      rm "$dir/doortimer.log"
-      timerloop=0
+      duration=$SECONDS
+      time="$(($duration / 3600))/$(($duration / 60))/$(($duration % 60))"
     fi
-    send "Security System" "Door is closed time open: $timeopen date: "
+    send "Security System" "Door is closed time open was: $time date: "
     echo "Door is closed"
     new_output="2"
     norun=0
