@@ -11,6 +11,8 @@ ip=
 port=
 dir=/root
 
+key="your otp key here"
+
 send () {
   if [ "$new_output" = "$old_output" ]; then
     echo "Already sent nothing to do"
@@ -37,7 +39,8 @@ echo "in" > /sys/class/gpio/gpio"${GPIO}"/direction
 while true; do
   if [ "1" = "$(</sys/class/gpio/gpio"${GPIO}"/value)" ]; then
     if [ "$lock" = "1" ] && [ "$norun" = "0" ]; then
-      echo "Lock" | netcat "$ip" "$port"
+      otp=$(oathtool --base32 --totp "$key")
+      echo "$otp" | netcat "$ip" "$port"
       norun=1
       SECONDS=0
     fi
