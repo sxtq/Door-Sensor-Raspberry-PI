@@ -27,11 +27,13 @@ else
   read otp
   otplocal=$(oathtool --base32 --totp "$key")
   if [ "$otp" = "$otplocal" ]; then
-    echo "OTP match locking the screen"
+    date=$(date)
+    echo "OTP match locking the screen date: $date"
     xdg-screensaver lock
     echo "local otp: $otplocal sent otp: $otp"
   else
-    echo "OTP does not match not locking"
+    date=$(date)
+    echo "OTP does not match not locking date: $date"
     echo "local otp: $otplocal sent otp: $otp"
   fi
 fi
