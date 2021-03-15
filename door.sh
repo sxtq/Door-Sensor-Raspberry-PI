@@ -42,10 +42,17 @@ while true; do
       echo "$otp" | netcat "$ip" "$port"
       norun=1
       SECONDS=0
+      rerun=1
     fi
     echo "Door is closed"
     send "Security System" "Door is open date: "
     new_output="1"
+    if [ "$rerun" = "1" ]; then #Second lock just incase first one failed
+      sleep 2
+      otp=$(oathtool --base32 --totp "$key")
+      echo "$otp" | netcat "$ip" "$port"
+      rerun=0
+    fi
   else
     if [ "$norun" = "1" ]; then
       duration=$SECONDS
